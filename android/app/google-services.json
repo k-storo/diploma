@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "591437875721",
+    "project_id": "ar-navigator-a7c68",
+    "storage_bucket": "ar-navigator-a7c68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591437875721:android:44a66c1fd612e3e4ab86d8",
+        "android_client_info": {
+          "package_name": "com.example.ar_navigator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591437875721-r8721k00n7oomoilgfs124f2r8dkdfor.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLye31vspx-q-L5jYuQ8fTZdds5XE2vcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "591437875721-r8721k00n7oomoilgfs124f2r8dkdfor.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
