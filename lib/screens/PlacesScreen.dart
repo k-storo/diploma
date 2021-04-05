@@ -1,5 +1,8 @@
 import 'dart:ui';
+import 'package:ar_navigator/assistants/assistantMethods.dart';
 import 'package:flutter/material.dart';
+
+import '../configMaps.dart';
 
 class PlacesScreen extends StatefulWidget {
   @override
@@ -7,6 +10,30 @@ class PlacesScreen extends StatefulWidget {
 }
 
 class _PlacesScreenState extends State<PlacesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AssistantMethods.getCurrentOnlineUserInfo();
+  }
+
+  Future<String> myHomePosition() async {
+    String myHomeAddress =
+        await AssistantMethods.searchMyHomeAddress(userCurrentInfo, context);
+    return myHomeAddress;
+  }
+
+  Future<String> myWorkPosition() async {
+    String myWorkAddress =
+        await AssistantMethods.searchMyWorkAddress(userCurrentInfo, context);
+    return myWorkAddress;
+  }
+
+  Future<String> myEducationPosition() async {
+    String myEducationAddress = await AssistantMethods.searchMyEducationAddress(
+        userCurrentInfo, context);
+    return myEducationAddress;
+  }
+
   Future<void> _displayTextInputDialog(
       BuildContext context, String urPlaceName) async {
     return showDialog(
@@ -186,12 +213,21 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(height: 3),
-                                Text(
-                                  "//placesAPI output//",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
+                                FutureBuilder<String>(
+                                    future: myHomePosition(),
+                                    builder: (context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                          snapshot.data,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator();
+                                      }
+                                    }),
                               ],
                             ),
                           )
@@ -237,12 +273,21 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(height: 3),
-                                Text(
-                                  "//placesAPI output//",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
+                                FutureBuilder<String>(
+                                    future: myEducationPosition(),
+                                    builder: (context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                          snapshot.data,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator();
+                                      }
+                                    }),
                               ],
                             ),
                           )
@@ -288,12 +333,21 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(height: 3),
-                                Text(
-                                  "//placesAPI output//",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
+                                FutureBuilder<String>(
+                                    future: myWorkPosition(),
+                                    builder: (context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                          snapshot.data,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Colors.grey),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator();
+                                      }
+                                    }),
                               ],
                             ),
                           )

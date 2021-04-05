@@ -1,0 +1,19 @@
+person
+bicycle
+car
+motorcycle
+airplane
+bus
+train
+truck
+boat
+traffic light
+fire hydrant
+stop sign
+parking meter
+cat
+dog
+horse
+sheep
+cow
+

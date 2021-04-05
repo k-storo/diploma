@@ -38,6 +38,9 @@ dependencies:
   http: ^0.13.1
   provider: ^5.0.0
   flutter_polyline_points: ^0.2.6
+  dcdg: ^3.0.0
+  camera: ^0.8.1
+  tflite: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +63,8 @@ flutter:
     - assets/images/logo.png
     - assets/images/userpic.png
     - assets/map_style/
+    - assets/models/ssd_mobilenet.tflite
+    - assets/models/labels.txt
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

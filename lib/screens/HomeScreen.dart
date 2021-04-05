@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:ar_navigator/configMaps.dart';
+import 'package:ar_navigator/main.dart';
+import 'package:ar_navigator/realtime/live_camera.dart';
+import 'package:ar_navigator/screens/LoginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:ar_navigator/DataHandler/appData.dart';
 import 'package:ar_navigator/assistants/assistantMethods.dart';
@@ -32,6 +37,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _darkMapStyle = await rootBundle.loadString('assets/map_style/dark.json');
   }
 
+  /*void placesPosition() async {
+    String myHomeAddress =
+        await AssistantMethods.searchMyHomeAddress(userCurrentInfo, context);
+    String myWorkAddress =
+        await AssistantMethods.searchMyWorkAddress(userCurrentInfo, context);
+    String myEducationAddress = await AssistantMethods.searchMyEducationAddress(
+        userCurrentInfo, context);
+    print("1: " + myHomeAddress);
+    print("2: " + myWorkAddress);
+    print("3: " + myEducationAddress);
+  }*/
+
   void locatePosition() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -61,8 +78,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
+    AssistantMethods.getCurrentOnlineUserInfo();
   }
 
   @override
@@ -137,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   SizedBox(height: 15),
                   Text(
-                    "Костянтин Сторожук",
+                    userCurrentInfo.name,
                     style: TextStyle(fontSize: 16),
                   ),
                 ],
@@ -154,10 +173,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               Divider(),
               ListTile(
-                onTap:()=> Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PlacesScreen())),
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PlacesScreen())),
                 leading: Icon(
                   Icons.map_outlined,
                   color: Colors.yellow,
@@ -168,14 +185,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
               ),
               Divider(),
-              ListTile(
-                leading: Icon(
-                  Icons.exit_to_app_outlined,
-                  color: Colors.red,
-                ),
-                title: Text(
-                  "Вийти?",
-                  style: TextStyle(fontSize: 16, color: Colors.red),
+              GestureDetector(
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, LoginScreen.idScreen, (route) => false);
+                },
+                child: ListTile(
+                  leading: Icon(
+                    Icons.exit_to_app_outlined,
+                    color: Colors.red,
+                  ),
+                  title: Text(
+                    "Вийти?",
+                    style: TextStyle(fontSize: 16, color: Colors.red),
+                  ),
                 ),
               ),
               Divider(),
@@ -184,7 +208,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Add your onPressed code here!
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LiveFeed(cameras),
+              ),
+            );
           },
           backgroundColor: Colors.yellow,
           child: const Icon(
@@ -208,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   newGoogleMapController = controller;
                   _setMapStyle();
                   locatePosition();
+                  /*placesPosition();*/
                 })
           ],
         ));

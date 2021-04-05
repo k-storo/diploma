@@ -259,7 +259,21 @@ class SignupScreen extends StatelessWidget {
         "name": nameTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
         "phone": phoneTextEditingController.text.trim(),
-        "password": passwordTextEditingController.text.trim()
+        "password": passwordTextEditingController.text.trim(),
+        "places": {
+          "home": {
+            "longitude": 0.001,
+            "latitude": 0.001,
+          },
+          "education": {
+            "longitude": 0.001,
+            "latitude": 0.001,
+          },
+          "work": {
+            "longitude": 0.001,
+            "latitude": 0.001,
+          }
+        }
         //save user
       };
       usersRef.child(user.uid).set(userDataMap);

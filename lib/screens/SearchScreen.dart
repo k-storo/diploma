@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:ar_navigator/DataHandler/appData.dart';
+import 'package:ar_navigator/assistants/assistantMethods.dart';
 import 'package:ar_navigator/assistants/requestAssistant.dart';
 import 'package:ar_navigator/configMaps.dart';
 import 'package:ar_navigator/models/address.dart';
@@ -17,6 +18,29 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController startTextEditingController = TextEditingController();
   TextEditingController endTextEditingController = TextEditingController();
   List<PlacePredictions> placePredictionsList = [];
+
+  Future<String> myHomePosition() async {
+    String myHomeAddress =
+        await AssistantMethods.searchMyHomeAddress(userCurrentInfo, context);
+    return myHomeAddress;
+  }
+
+  Future<String> myWorkPosition() async {
+    String myWorkAddress =
+        await AssistantMethods.searchMyWorkAddress(userCurrentInfo, context);
+    return myWorkAddress;
+  }
+
+  Future<String> myEducationPosition() async {
+    String myEducationAddress = await AssistantMethods.searchMyEducationAddress(
+        userCurrentInfo, context);
+    return myEducationAddress;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,12 +214,22 @@ class _SearchScreenState extends State<SearchScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 3),
-                                    Text(
-                                      "//placesAPI output//",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
+                                    FutureBuilder<String>(
+                                        future: myHomePosition(),
+                                        builder: (context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey),
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        }),
                                   ],
                                 ),
                               )
@@ -236,12 +270,22 @@ class _SearchScreenState extends State<SearchScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 3),
-                                    Text(
-                                      "//placesAPI output//",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
+                                    FutureBuilder<String>(
+                                        future: myEducationPosition(),
+                                        builder: (context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey),
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        }),
                                   ],
                                 ),
                               )
@@ -282,12 +326,22 @@ class _SearchScreenState extends State<SearchScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 3),
-                                    Text(
-                                      "//placesAPI output//",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
+                                    FutureBuilder<String>(
+                                        future: myWorkPosition(),
+                                        builder: (context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey),
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        }),
                                   ],
                                 ),
                               )
@@ -310,7 +364,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void findPlace(String placeName) async {
     if (placeName.length > 1) {
       String autoCompleteUrl =
-          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:ua";
+          "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:ua&language=uk";
 
       var res = await RequestAssistant.getRequest(autoCompleteUrl);
 
@@ -387,7 +441,7 @@ class PredictionTile extends StatelessWidget {
 
   void getPlaceAddressDetails(String placeId, context) async {
     String placeDetailsUrl =
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey&language=uk";
 
     var res = await RequestAssistant.getRequest(placeDetailsUrl);
     if (res == "failed") {
