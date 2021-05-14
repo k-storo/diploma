@@ -2,11 +2,13 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_navigator/realtime/bounding_box.dart';
 import 'package:ar_navigator/realtime/camera.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:math' as math;
 import 'package:tflite/tflite.dart';
 
 class LiveFeed extends StatefulWidget {
   final List<CameraDescription> cameras;
+
   LiveFeed(this.cameras);
   @override
   _LiveFeedState createState() => _LiveFeedState();
@@ -35,10 +37,26 @@ class _LiveFeedState extends State<LiveFeed> {
     });
   }
 
+  int getCurrentSpeed() {
+    var speedInMps;
+    Geolocator.getPositionStream(
+            forceAndroidLocationManager: true,
+            intervalDuration: Duration(seconds: 3),
+            distanceFilter: 2,
+            desiredAccuracy: LocationAccuracy.bestForNavigation)
+        .listen((position) {
+      speedInMps = position.speed.toStringAsPrecision(2);
+    });
+    print(speedInMps);
+    return speedInMps;
+  }
+
   @override
   void initState() {
     super.initState();
     loadTfModel();
+    getCurrentSpeed();
+    // this is your speed
   }
 
   @override
@@ -46,7 +64,7 @@ class _LiveFeedState extends State<LiveFeed> {
     Size screen = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Real Time Object Detection"),
+        title: Text(getCurrentSpeed().toString()),
       ),
       body: Stack(
         children: <Widget>[

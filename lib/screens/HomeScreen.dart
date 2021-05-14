@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:ar_navigator/configMaps.dart';
 import 'package:ar_navigator/main.dart';
 import 'package:ar_navigator/realtime/live_camera.dart';
+import 'package:ar_navigator/screens/ArCamera.dart';
 import 'package:ar_navigator/screens/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart'
+    show MethodChannel, PlatformException, rootBundle;
 import 'package:ar_navigator/DataHandler/appData.dart';
 import 'package:ar_navigator/assistants/assistantMethods.dart';
 import 'package:ar_navigator/screens/SearchScreen.dart';
@@ -26,6 +28,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _darkMapStyle;
   GoogleMapController newGoogleMapController;
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
+
+  static const platform = const MethodChannel("test_activity");
+
+  Future<String> myName(userCurrentInfo) async {
+    String myName = userCurrentInfo.name;
+
+    return myName;
+  }
 
   List<LatLng> pLineCoordinates = [];
   Set<Polyline> polylineSet = {};
@@ -77,11 +87,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    AssistantMethods.getCurrentOnlineUserInfo();
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
     _loadMapStyle();
-    AssistantMethods.getCurrentOnlineUserInfo();
   }
 
   @override
@@ -98,13 +108,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         appBar: PreferredSize(
             preferredSize: Size(double.infinity, 200),
             child: AppBar(
-              automaticallyImplyLeading:
-                  false, // this will hide Drawer hamburger icon
-              actions: <Widget>[Container()],
               backgroundColor: Colors.transparent,
               elevation: 0,
               flexibleSpace: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40, horizontal: 50),
+                  padding: EdgeInsets.symmetric(vertical: 45, horizontal: 50),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -152,13 +159,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     backgroundImage: AssetImage(
                       "assets/images/userpic.png",
                     ),
-                    radius: 50,
+                    radius: 45,
                   ),
                   SizedBox(height: 15),
-                  Text(
-                    userCurrentInfo.name,
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  Expanded(
+                    child: FutureBuilder<String>(
+                        future: myName(userCurrentInfo),
+                        builder: (context, AsyncSnapshot<String> snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(
+                              snapshot.data,
+                              style: TextStyle(fontSize: 16),
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        }),
+                  )
                 ],
               )),
               ListTile(
@@ -206,19 +223,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LiveFeed(cameras),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LiveFeed(cameras),
+                    ),
+                  );
+                },
+                heroTag: "btn",
+                backgroundColor: Colors.yellow,
+                child: const Icon(
+                  Icons.threed_rotation_sharp,
+                  color: Colors.black,
+                ),
               ),
-            );
-          },
-          backgroundColor: Colors.yellow,
-          child: const Icon(
-            Icons.camera_alt,
-            color: Colors.black,
+              SizedBox(
+                width: 40,
+              ),
+              FloatingActionButton(
+                backgroundColor: Colors.yellow,
+                heroTag: "btn2",
+                onPressed: () {
+                  _getNewActivity();
+                },
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.black,
+                ),
+              )
+            ],
           ),
         ),
         body: Stack(
@@ -241,6 +282,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 })
           ],
         ));
+  }
+
+  _getNewActivity() async {
+    try {
+      await platform.invokeMethod('startNewActivity');
+    } on PlatformException catch (e) {
+      print(e.message);
+    }
   }
 
   @override

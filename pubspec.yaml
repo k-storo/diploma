@@ -41,6 +41,7 @@ dependencies:
   dcdg: ^3.0.0
   camera: ^0.8.1
   tflite: ^1.1.1
+  arcore_flutter_plugin: ^0.0.10
 
 dev_dependencies:
   flutter_test:
